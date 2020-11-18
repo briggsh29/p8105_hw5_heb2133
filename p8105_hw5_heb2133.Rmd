@@ -22,3 +22,15 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
+
+## Problem 1
+
+```{r}
+homicide_df = 
+  read.csv("./data/homicide-data.csv") %>% 
+  janitor::clean_names()
+```
+
+This dataset is from the Washington Post, which mapped over 52,000 homicides and any resulting arrests within 50 of the largest cities in America. Key variables in this dataset include Report date; Victim name, age, and sex; City; State; Latitude and longitude; and the Disposition. There are `r nrow(homicide_df)` rows and `r ncol(homicide_df)` columns in this raw dataset. 
+
+create city_state variable "Baltimore, MD"
