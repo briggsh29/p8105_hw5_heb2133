@@ -140,29 +140,29 @@ l_study_df =
     week_1:week_8,
     names_to = "week_number",
     names_prefix = "week_",
-    values_to = "observations"
+    values_to = "observed_values"
   ) %>% 
-  select(subject_id, study_arm, week_number, observations, file_name)
+  select(subject_id, study_arm, week_number, observed_values, file_name)
 ```
 
-Make a spaghetti plot showing observations on each subject over time. Comment on differences between groups.
+Make a spaghetti plot showing observations on each subject over time. 
 
 ```{r}
 l_study_df %>% 
-  ggplot(aes(x = week_number, y = observations, color = study_arm)) + 
+  ggplot(aes(x = week_number, y = observed_values, color = study_arm)) + 
   geom_point() +
   geom_path(aes(group = subject_id), alpha = 0.4) + 
   labs(title = "Observations for each study subject over time") +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 10),
-    axis.title = element_text(size = 9),
+    plot.title = element_text(hjust = 0.5, size = 11),
+    axis.title = element_text(size = 10),
     axis.text.x = element_text(vjust = 0.5, hjust = 1),
     legend.title = element_text(size = 9),
-    legend.text = element_text(size = 8)
+    legend.text = element_text(size = 9)
     )
 ```
 
-Looking at this plot, we can see that between the control and experimental arms - the control arm appears to diverge from the experiemental arm in terms of observations. 
+Looking at this plot, we can see that between the control and experimental arms - subjects in the control arm appeared to have greater observed values compared to those in the experimental arm of the study. Relatively few subjects in the control arm appear to have negative observed values - while several subjects in the experimental arms have negative values recorded. 
 
 ## Problem 3
 
