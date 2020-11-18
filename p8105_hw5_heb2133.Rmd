@@ -191,6 +191,8 @@ output_0 = rerun(5000, hypoth_test(mu = 0)) %>%
   select(estimate, p.value)
 #Gives mu estimate and p-value for each of the 5000 samples
 
+output_0
+
 mu_var_list = 
   list(
     "mu = 1" = 1,
@@ -206,14 +208,16 @@ output = vector("list", length = 6)
 
 for (i in 1:6) {
   
-    output[[i]] = rerun(5000, hypoth_test(mu = mu_var_list[[i]])) %>% 
+    output[[i]] = 
+      rerun(5000, hypoth_test(mu = mu_var_list[[i]])
+            ) %>% 
     bind_rows() %>% 
     select(estimate, p.value)
 }
 #Runs 5000 simulations for each mu value (reports mu estimate and p-value for each sample)
 ```
 
-Plot showing the proportion of times the null was rejected (y axis) and the true value of μ (x axis). Describe the association between effect size and power.
+Plot:proportion of times the null was rejected (y axis) and the true value of μ (x axis)
 
 ```{r}
 output_all = vector("list", length = 6)
@@ -255,5 +259,45 @@ prop_reject_df %>%
 
 From the plot we can see that as mu increases (the true population mean), a greater proportion of null hypotheses are rejected (so power increases). From this, we could say that as 'effect size' increases, power will also increase.
 
+Plot: Showing the average estimate of μ^ (y axis) and the true value of μ (x axis). 
 
-Make a plot showing the average estimate of μ^ on the y axis and the true value of μ on the x axis. Make a second plot (or overlay on the first) the average estimate of μ^ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. Is the sample average of μ^ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
+```{r}
+output_est = vector("list", length = 6)
+
+for (i in 1:6) {
+  
+    output_est[[i]] = 
+      rerun(5000, hypoth_test(mu = mu_var_list[[i]])
+            ) %>% 
+      bind_rows() %>% 
+      mutate(mu = mu_var_list[[i]]) %>% 
+      select(estimate, mu) %>% 
+      group_by(mu) %>% 
+      summarize(
+        avg_est_mu = mean(estimate)
+      )
+}
+
+mu_est_df = as.data.frame(
+  do.call(rbind, lapply(output_est, function(x) 
+  { unlist(x) }
+  )))
+
+mu_est_df %>% 
+  ggplot(aes(x = mu, y = avg_est_mu)) + 
+  geom_point() + 
+  geom_path() + 
+  labs(title = "Average estimate of mu in samples versus true mu",
+       y = "μ^ (average estimate)", 
+       x = "μ"
+         ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 11),
+    axis.title = element_text(size = 10),
+    axis.text.x = element_text(vjust = 0.5, hjust = 1),
+    )
+  
+```
+
+
+Make a second plot (or overlay on the first) the average estimate of μ^ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. Is the sample average of μ^ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
