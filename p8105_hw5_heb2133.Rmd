@@ -34,7 +34,9 @@ homicide_df =
 ```
 
 This dataset is from the Washington Post, which mapped over 52,000 homicides and any resulting arrests within 50 of the largest cities in America. Key variables in this dataset include Report date; Victim name, age, and sex; City; State; Latitude and longitude; and the Disposition. There are `r nrow(homicide_df)` rows and `r ncol(homicide_df)` columns in this raw dataset. 
-e
+
+Add variables "city_state", "resolved", and summarize total homicides and total unresolved homicides within cities. 
+
 ```{r}
 homicide_df =
   homicide_df %>% 
@@ -44,12 +46,36 @@ homicide_df =
       disposition == "Closed without arrest" ~ "unsolved",
       disposition == "Open/No arrest"        ~ "unsolved",
       disposition == "Closed by arrest"      ~ "solved")
-  ) 
+  ) %>% 
+  select(city_state, resolved) %>% 
+  filter(city_state != "Tulsa_AL")
 
-homicide_df %>% 
+aggregate_df = 
+  homicide_df %>% 
   group_by(city_state) %>% 
   summarise(
-    total_homicides = n(),
-    unsolved_homicides = sum(resolved == "unsolved")
+    total_hom = n(),
+    unsolved_hom = sum(resolved == "unsolved")
   )
 ```
+
+For Baltimore_MD, estimate proportion of homicides that are unsolved. 
+
+```{r}
+balt_prop = 
+  prop.test(
+    aggregate_df %>% filter(city_state == "Baltimore_MD") %>% pull(unsolved_hom), 
+    aggregate_df %>% filter(city_state == "Baltimore_MD") %>% pull(total_hom)) %>% 
+  broom::tidy()
+
+balt_prop %>% pull(estimate)
+balt_prop %>% pull(conf.low) 
+balt_prop %>% pull(conf.high)
+```
+
+Run prop.test for each city, extract the proportion and CIs for each:
+
+```{r}
+
+```
+
