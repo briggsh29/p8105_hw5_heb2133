@@ -49,6 +49,7 @@ homicide_df =
   ) %>% 
   select(city_state, resolved) %>% 
   filter(city_state != "Tulsa_AL")
+#removing presumably data entry error for "Tulsa_AL"
 
 aggregate_df = 
   homicide_df %>% 
