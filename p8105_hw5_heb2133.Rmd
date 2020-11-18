@@ -136,20 +136,33 @@ l_study_df =
       subject_id == c("e_01", "e_02", "e_03", "e_04", "e_05", 
                     "e_06", "e_07", "e_08", "e_09", "e_10") ~ "experimental")
   ) %>% 
-  select(subject_id, study_arm, everything())
-  
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week_number",
+    names_prefix = "week_",
+    values_to = "observations"
+  ) %>% 
+  select(subject_id, study_arm, week_number, observations, file_name)
 ```
 
-
-Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary. 
-
-Pivot --- week (#) and then obs next to it!!
+Make a spaghetti plot showing observations on each subject over time. Comment on differences between groups.
 
 ```{r}
-
+l_study_df %>% 
+  ggplot(aes(x = week_number, y = observations, color = study_arm)) + 
+  geom_point() +
+  geom_path(aes(group = subject_id), alpha = 0.4) + 
+  labs(title = "Observations for each study subject over time") +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.title = element_text(size = 9),
+    axis.text.x = element_text(vjust = 0.5, hjust = 1),
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8)
+    )
 ```
 
-Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
+Looking at this plot, we can see that between the control and experimental arms - the control arm appears to diverge from the experiemental arm in terms of observations. 
 
 ## Problem 3
 
