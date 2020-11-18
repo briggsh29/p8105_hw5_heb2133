@@ -103,23 +103,45 @@ results_df %>%
 
 ## Problem 2
 
-Using longitudinal study data. Create a tidy dataframe with data from all participants (subject ID, arm, and observations over time).
+Create dataframe for the provided longitudinal study data with data from all participants across the 20 csv files. 
 
 ```{r}
 path_df = 
   tibble(
     path = list.files("ls_data")
   ) %>% 
-  mutate(path = str_c("ls_data/", path)
-         )
-
-read_csv(path_df$path[[1]])
-#How to do across all 20 paths, data = map(.......) in mutate function
+  mutate(path = str_c("ls_data/", path),
+         data = map(path, read_csv)
+         ) %>% 
+  unnest(data)
 ```
 
-Dataframe containing all file names
+Tidy the dataframe:
 
-Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe. Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary. 
+```{r}
+l_study_df = 
+  path_df %>% 
+  rename(file_name = path) %>% 
+  mutate(
+    #creating subject IDs
+    subject_id = file_name,
+    subject_id = str_remove(subject_id, "ls_data/"),
+    subject_id = str_remove(subject_id, ".csv"),
+    subject_id = str_replace(subject_id, "con", "c"),
+    subject_id = str_replace(subject_id, "exp", "e"),
+    #creating study arm variable
+    study_arm = case_when(
+      subject_id == c("c_01", "c_02", "c_03", "c_04", "c_05", 
+                    "c_06", "c_07", "c_08", "c_09", "c_10") ~ "control",
+      subject_id == c("e_01", "e_02", "e_03", "e_04", "e_05", 
+                    "e_06", "e_07", "e_08", "e_09", "e_10") ~ "experimental")
+  ) %>% 
+  select(subject_id, study_arm, everything())
+  
+```
+
+
+Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary. 
 
 Pivot --- week (#) and then obs next to it!!
 
