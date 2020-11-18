@@ -102,21 +102,39 @@ results_df %>%
 
 ## Problem 2
 
-Create a tidy dataframe, data from all participants (subject ID, arm, and observations over time).
+Using longitudinal study data. Create a tidy dataframe with data from all participants (subject ID, arm, and observations over time).
 
-Start with a dataframe containing all file names; the list.files function will help
-Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe
+```{r}
+path_df = 
+  tibble(
+    path = list.files("ls_data")
+  ) %>% 
+  mutate(path = str_c("ls_data/", path)
+         )
+
+read_csv(path_df$path[[1]])
+#How to do across all 20 paths, data = map(.......) in mutate function
+```
+
+Dataframe containing all file names
+
+Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe. Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary. 
+
+Pivot --- week (#) and then obs next to it!!
 
 ```{r}
 
 ```
 
-Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
 Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups
 
 ## Problem 3
 
 Generate 5000 datasets from normal distrib with n = 50, sigma = 5, and mu = 0. 
+
+```{r}
+
+```
 
 For each dataset, save μ^ and the p-value arising from a test of H:μ=0 using α=0.05. 
 
